@@ -1,10 +1,10 @@
 # zh06-esphome
-ESPHome component for particulate matter sensor Winsen ZH06 and its sibilings (ZH06-II, etc).
+ESPHome component for particulate matter sensor Winsen ZH06 and its siblings (ZH06-II, etc).
 
 The sensor uses laser scattering principle for detecting dust content in the air. 
 
 - PM10, PM2.5, PM1 concentration measurement
-- UART protocol witt baudrate 9600
+- UART protocol with baudrate 9600
 - Supply voltage: 4.9 - 5.5V
 - Data levels: 3.3V (TTL)
 - Current consumption:
