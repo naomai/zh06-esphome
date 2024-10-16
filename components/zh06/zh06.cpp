@@ -184,17 +184,29 @@ void ZH06Component::send_command_(uint8_t cmd, uint8_t data) {
 
 void ZH06Component::parse_data_() {
   uint8_t cmd = this->data_[1];
-  if(cmd == 0x86 && this->expecting_response_) {
-    uint16_t pm_1_0_concentration, pm_2_5_concentration, pm_10_0_concentration;
+  bool new_readings = false;
+  uint16_t pm_1_0_concentration, pm_2_5_concentration, pm_10_0_concentration;
 
+  if(cmd == 0x86 && this->expecting_response_) {
+    // Sensor responds to measure request
     pm_1_0_concentration = this->get_16_bit_uint_(6);
     pm_2_5_concentration = this->get_16_bit_uint_(2);
     pm_10_0_concentration = this->get_16_bit_uint_(4);
     
+    new_readings = true;
+  } else if(cmd == 0x4D && !this->expecting_response_) {
+    // Measurements in automatic mode
+    pm_1_0_concentration = this->get_16_bit_uint_(10);
+    pm_2_5_concentration = this->get_16_bit_uint_(12);
+    pm_10_0_concentration = this->get_16_bit_uint_(14);
+    
+    new_readings = true;
+  }
 
+  if(new_readings) {
     ESP_LOGD(TAG,
-              "Got PM1.0 Concentration: %u µg/m^3, PM2.5 Concentration %u µg/m^3, PM10.0 Concentration: %u µg/m^3",
-              pm_1_0_concentration, pm_2_5_concentration, pm_10_0_concentration);
+          "Got PM1.0 Concentration: %u µg/m^3, PM2.5 Concentration %u µg/m^3, PM10.0 Concentration: %u µg/m^3",
+          pm_1_0_concentration, pm_2_5_concentration, pm_10_0_concentration);
 
     if (this->pm_1_0_sensor_ != nullptr)
       this->pm_1_0_sensor_->publish_state(pm_1_0_concentration);
