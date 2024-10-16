@@ -27,7 +27,7 @@ class ZH06Component : public uart::UARTDevice, public Component {
   float get_setup_priority() const override;
   void dump_config() override;
  
-  void set_update_interval(uint32_t val) { update_interval_ = val; };
+  void set_update_interval(uint32_t val) { update_interval_ = val; initialised_ = 0; };
 
   void set_pm_1_0_sensor(sensor::Sensor *pm_1_0_sensor);
   void set_pm_2_5_sensor(sensor::Sensor *pm_2_5_sensor);
