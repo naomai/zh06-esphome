@@ -51,6 +51,10 @@ void ZH06Component::loop() {
   } else if (now - this->last_update_ < this->update_interval_) {
     // Otherwise just leave the sensor powered up and come back when we hit the update
     // time
+      if (this->initialised_ == 0) {
+        this->send_command_(PMS_CMD_AUTO_MANUAL, 0x40);
+        this->initialised_ = 1;
+      }
     return;
   }
 
