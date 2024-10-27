@@ -20,7 +20,8 @@ void ZH06Component::loop() {
   if (this->update_interval_ > PMS_STABILISING_MS) {
     if (this->initialised_ == 0) {
       this->send_command_(PMS_CMD_AUTO_MANUAL, 0x41);
-      this->send_command_(PMS_CMD_ON_STANDBY, 0);
+      //this->send_command_(PMS_CMD_ON_STANDBY, 0);
+      this->state_ = ZH06_STATE_IDLE;
       this->initialised_ = 1;
     }
     switch (this->state_) {
