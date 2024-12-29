@@ -18,6 +18,7 @@ void ZH06Component::loop() {
   // rather than running it constantly. It does take some time to stabilise, so we
   // need to keep track of what state we're in.
   if (this->update_interval_ > PMS_STABILISING_MS) {
+    // MANUAL MEASUREMENTS
     if (this->initialised_ == 0) {
       this->send_command_(PMS_CMD_AUTO_MANUAL, 0x41);
       //this->send_command_(PMS_CMD_ON_STANDBY, 0);
@@ -50,11 +51,21 @@ void ZH06Component::loop() {
         break;
     }
   } else {
+    // AUTOMATIC MEASUREMENTS
     if (this->initialised_ == 0) {
       this->send_command_(PMS_CMD_AUTO_MANUAL, 0x40);
       this->send_command_(PMS_CMD_ON_STANDBY, 0);
       this->initialised_ = 1;
+      this->fan_on_time_ = now;
     }
+
+    if(now - this->fan_on_time_ < PMS_STABILISING_MS) {
+      // discard all incoming measurements until stabilisation
+      while (this->available())
+          this->read_byte(&this->data_[0]);
+      return;
+    }
+
     if (now - this->last_update_ < this->update_interval_) {
       // Otherwise just leave the sensor powered up and come back when we hit the update
       // time
